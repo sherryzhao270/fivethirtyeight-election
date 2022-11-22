@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/noframework.waypoints.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,600');
+  *{
+    margin:0;
+    padding:0;
+  }
+  html,
+  body{
+     height: 100%;
+     padding: 0;
+     scroll-behavior: smooth;
+     background: #f7f5f2;
+     color: #666;
+     font-family: 'Open Sans', sans-serif;
+     font-weight: 300;
+  }
+  h2{
+    line-height: 1.25;
+    padding-top: 45px;
+    font-weight: 300;
+  }
+  svg{
+    padding: 20px;
+  }
+  text{
+    font-size: 10px;
+  }
+  strong{
+    font-weight: 600;
+  }
+  #graphic {
+    max-width:  1440px;
+    width: 100%;
+    position:   relative; 
+    height:  100%;
+    position:  relative; 
+    margin:auto;
+  }
+  .container {
+    height: 100%;
+    max-width: 440px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    height: 100%;
+    line-height: 1.5;
+    left: 500px;
+  }
+  .container div {
+    height: 100%;
+    display: block;
+    padding: 0 45px;
+  }
+  .fixed {
+    position: fixed;
+    max-width: 500px;
+    height: 500px;
+    top: 50px;
+  }
+  </style>
+</head>
+
+<body>
+  <div id="graphic">
+  <div class="container">
+    <div id="div1">
+      <h2>Among the <strong>85</strong> surveies about<strong> Hallowin Candies</strong> </h2>
+    </div>
+    <div id="div2">
+      <h2>Out of those <strong>85</strong> there were <strong>12</strong> contains Chocolate</h2>
+      <p></p>
+    </div>
+    <div id="div4">
+      <h2><strong>5</strong> out of <strong>12</strong> those contains Chocolate are bars. The other <strong>7</strong> aren't</h2>
+    </div>
+    <div id="div6">
+      <h2>Those <strong></strong> Chocolate bars tended to have <strong>high</strong> prices </h2>
+    </div>
+    
+  </div>
+
+
+  <!-- svg -->
+  <div class="fixed"><svg id="viz" width="100%" height="100%"></svg></div>
+
+</div><!-- /graphic -->
+  
+  
+  <script>
+  async function ready() {
+    var data;
+    data = await d3.csv("fivethirtyeight_election_deniers.csv").then();
+    //console.log(data);
+    count_total = -1;
+    count_denyquestion=0;
+    count_deny =0;
+    count_denyincube =0;
+    denierdata=[];
+    console.log(data);
+    for(i in data)
+    {
+      count_total++;
+      if(data[i].Stance=="Fully denied")
+      {
+        count_denyquestion++;
+        count_deny++;
+        denierdata.push(data[i]);
+        
+      }
+      if(data[i].Incumbent=="Yes"&&data[i].Stance=="Fully denied")
+      {
+        count_denyincube++;
+      }
+      if(data[i].Stance=="Raised questions")
+      {
+        count_denyquestion++;
+      }
+    }
+    // for(i in data)
+    // {
+    //   if(data[i].bar==0 || data[i].chocolate==0)
+    //   {
+    //       chcolatebardata.push(data[i]);
+    //   }
+    // }
+    console.log(count_total);
+    console.log(count_denyquestion);
+    console.log(count_deny);
+    console.log(denierdata);
+    document.getElementById("div1").innerHTML = "<h2>According to the data from FiveThirtyEight, among <strong>"+count_total+"</strong> Republican Candiates <strong>"+count_denyquestion+"</strong> of them denied or raise question about 2020 election</h2>";
+    document.getElementById("div2").innerHTML = "<h2>Out of those <strong>"+count_denyquestion+"</strong> who denied or raise question <strong>"+count_deny+"</strong> FULL DENIED the result of 2020 election</h2><p></p>";
+    document.getElementById("div4").innerHTML ="<h2><strong>"+count_denyincube+"</strong> out of the <strong>"+count_deny+"</strong> candidates who fully denied the result are INCUMBENT of the position";
+
+
+
+    //
+    //
+    //前面的部分是数据导入
+    //代码我检查过了基本没有问题
+    //后半部分(图像显示的部分)还没做
+    //
+		//svg
+    let svg = d3.select("svg");
+
+
+    //svg width and height
+    svg.attr('width',500)
+        .attr('height',500)
+
+
+    //set up grid spacing
+    let spacing = 10;
+    let rows = 20;
+    let column = 20;
+    let randnum = (min,max) => Math.round( Math.random() * (max-min) + min );
+
+
+
+    //create group and join our data to that group
+    let group = svg.selectAll('g')
+      .data(denierdata)
+      .enter()
+      .append("g")
+      
+    let group1 = svg.selectAll('g1')
+      .data(denierdata)
+      .enter()
+      .append("g1")
+
+    //create rectangles
+    let rects = group.append("rect")
+
+    d3.selectAll('g')
+      .append("text")
+      .text( (d) => d["competitorname"])
+      .attr("fill", "gray")
+      .attr("class", "competitorname")
+      .attr("dx", -500)
+
+    //age data
+    d3.selectAll('g')
+      .append("text")
+      .text( (d) => d["pricepercent"] )
+      .attr("fill", "#fff")
+      .attr("class", "pricepercent")
+      .attr("dx", -500)
+
+    
+
+
+
+    // square grid
+    let grid = () =>{
+      rects
+        .transition()
+        .delay((d, i) => 10 * i)
+        .duration(600)
+        //.ease("elastic")
+        .attr("width", 5)
+        .attr("height", 5)
+        .attr("rx", 5)
+        .attr("ry", 5)
+        .attr("x", (d, i) => i % column * spacing)
+        .attr("y", (d, i) => Math.floor(i / 10) % rows * spacing)
+        .attr("fill", (d, i) => (i < count_total ? "#394147" : "#99c125"))
+        .attr("opacity", "1")
+    }
+
+
+
+    //circle grid
+    let grid2 = () =>{
+      rects
+        .transition()
+        .delay((d, i) => 10 * i)
+        .duration(600)
+        //.ease("elastic")
+        .attr("width", 20)
+        .attr("height", 20)
+        //.attr("rx", "50%")
+        //.attr("ry", "50%")
+        .attr("x", (d, i) => i % column * spacing)
+        .attr("y", (d, i) => Math.floor(i / 10) % rows * spacing)
+        .attr("fill", (d, i) => (i > count_total-count_chocolate ?  "Brown": "none"))
+    }
+
+
+    //divide
+    let divide = () =>{
+      rects
+        .transition()
+        .delay((d, i) => 10 * i)
+        .duration(600)
+        //.ease("elastic")
+        .attr("width", 10)
+        .attr("height", 10)
+        .attr("rx", 0)
+        .attr("ry", 0)
+        .attr("x", (d, i) => i<count_denyquestion ? randnum(100, 150) :  randnum(200, 250))
+        .attr("y", (d, i) => i * 12)
+        .attr("fill", (d, i) => i<count_denyquestion  ? "Brown": "#99c125")
+        .attr("opacity", (d,i)=> i < count_denyquestion ? 1 : 0 )//only show 12 people
+
+
+
+        //age
+        d3.selectAll('text.pricepercent')
+          .transition()
+          .delay( (d,i) => 40*i ) 
+          .duration(900)
+          //.ease('elastic')
+          .attr("dx", -500)
+
+        d3.selectAll('text.competitorname')
+          .transition()
+          .delay( (d,i) => 40*i ) 
+          .duration(900)
+          .attr("dx", -500)
+
+    }
+
+
+
+
+
+    //bar cart
+    let barChart = () => {
+      rects
+        .attr("rx", 0 )
+        .attr("ry", 0 )
+        .transition()
+        .delay( (d,i) => 20*i ) 
+        .duration(900)
+        //.ease('elastic')//linear, quad, cubic, sin, exp, circle, elastic, back, bounce
+        .attr("x", (d,i) => 150 )
+        .attr("y", (d,i) => i * 17 )
+        .attr("width", (d,i) => d["pricepercent"]*400)
+        .attr("height", (d,i) => 15)
+        .attr("fill", (d, i) => "Brown")
+        .attr("opacity", 1)
+        .attr("transform", "translate(0,0) rotate(0)")
+        .attr("opacity", (d,i)=> i < count_chocolatebar ? 1 : 0 )//only show 12 people
+
+
+      //age text
+      d3.selectAll('text.pricepercent')
+        .transition()
+        .delay( (d,i) => 20*i ) 
+        .duration(900)
+        //.ease('elastic')
+        //align text right
+        .attr("text-anchor", "start")
+        .attr("dx", 160)
+        .attr("dy", (d,i)=> (i * 17) + 12)
+        .attr("opacity", (d,i)=> {
+          if(i < count_total)
+          {
+            //console.log(+"AND"+d.chocolate);
+            if(d.bar==1)
+            {
+              //console.log("hi");
+              if(d.chocolate==1)
+              {
+                return 1;
+              }
+            }
+            return 0;
+          }
+        } )//nly show 12 people
+        d3.selectAll('text.competitorname')
+          .transition()
+          .delay( (d,i) => 20*i ) 
+          .duration(900)
+          //.ease('elastic')
+          //align text left
+          .attr("text-anchor", "end")
+          .attr("dx", 140)
+          .attr("dy", (d,i)=> (i * 17) + 12)
+          .attr("opacity", (d,i)=> i < 20 ? 1 : 0 )//only show 12 people
+    }
+
+    
+
+
+
+    //waypoints scroll constructor
+    function scroll(n, offset, func1, func2){
+      return new Waypoint({
+        element: document.getElementById(n),
+        handler: function(direction) {
+           direction == 'down' ? func1() : func2();
+        },
+        //start 75% from the top of the div
+        offset: offset
+      });
+    };
+
+
+
+    //triger these functions on page scroll
+    new scroll('div2', '75%', grid2, grid);
+    new scroll('div4', '75%', divide, grid);
+    new scroll('div6', '75%', barChart, divide);
+
+
+
+    //start grid on page load
+    grid();
+  }
+  ready();
+
+  </script>
+</body>
