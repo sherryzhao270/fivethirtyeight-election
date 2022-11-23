@@ -83,19 +83,6 @@
       <div id="div1">
         <h2>Among the <strong>85</strong> surveies about<strong> Hallowin Candies</strong> </h2>
       </div>
-      <!-- <div id="div2">
-        <h2>Out of those <strong>85</strong> there were <strong>12</strong> contains Chocolate</h2>
-        <p></p>
-      </div>
-      <div id="div4">
-        <h2><strong>5</strong> out of <strong>12</strong> those contains Chocolate are bars. The other
-          <strong>7</strong> aren't
-        </h2>
-      </div>
-      <div id="div6">
-        <h2>Those <strong></strong> Chocolate bars tended to have <strong>high</strong> prices </h2>
-      </div> -->
-
     </div>
 
 
@@ -135,9 +122,10 @@
 
     let container = document.getElementById("container");
     //all candiates
-    Object.keys(dataOrder).map((stance) => container.innerHTML += `<div id="${stance.replace(/\s/g, '')}"></div>`)
-    //raised questoin and fully denied
-    container.innerHTML += `<div id="div2"></div>`
+    Object.keys(dataOrder).map((stance) => container.innerHTML += `<div id="${stance.replace(/\s/g, '')}"></div>`);
+    //other divs
+    container.innerHTML += `<div id="div2"></div>
+                            <div id="div3"></div>`;
 
 
     async function ready() {
@@ -148,7 +136,10 @@
       //all candiates
       Object.keys(dataOrder).map((stance) => document.getElementById(stance.replace(/\s/g, '')).innerHTML += `<h2><strong>${data.filter(d => d.Stance === stance).length}</strong> of them stated ${stance.toLowerCase()}. </h2>`)
       //raised questoin and fully denied
-      document.getElementById("div2").innerHTML += `<h2>Among <strong>${data.filter(c => c.Stance === "Raised questions" || c.Stance === "Fully denied").length}</strong> candidates who fully denied or raise question, </h2>`
+      document.getElementById("div2").innerHTML += `<h2>Among <strong>${data.filter(c => c.Stance === "Raised questions" || c.Stance === "Fully denied").length}</strong> candidates who fully denied or raise question, </h2>`;
+      //divided by incumbent
+      document.getElementById("div3").innerHTML += `<h2><strong>${data.filter(c => (c.Stance === "Raised questions" || c.Stance === "Fully denied") && c.Incumbent === 'Yes').length}</strong> candidates are incumbent (left), 
+        <strong>${data.filter(c => (c.Stance === "Raised questions" || c.Stance === "Fully denied") && c.Incumbent === 'No').length}</strong> candidates are not (right). </h2>`;
 
       //console.log(data);
       count_total = -1;
@@ -184,8 +175,6 @@
       console.log(count_deny);
       console.log(denierdata);
       document.getElementById("div1").innerHTML = "<h2>According to the data from FiveThirtyEight, among <strong>" + count_total + "</strong> Republican Candiates";
-      //document.getElementById("div2").innerHTML = "<h2>Out of those <strong>" + count_denyquestion + "</strong> who denied or raise question <strong>" + count_deny + "</strong> FULL DENIED the result of 2020 election</h2><p></p>";
-      //document.getElementById("div4").innerHTML = "<h2><strong>" + count_denyincube + "</strong> out of the <strong>" + count_deny + "</strong> candidates who fully denied the result are INCUMBENT of the position";
 
       firstPage()
 
@@ -262,31 +251,16 @@
         .attr("opacity", d => (d.Stance === "Raised questions" || d.Stance === "Fully denied" ? 1 : 0))
     }
 
-
-
-
-
-
-
-
-
-
-
     //divide
     let divide = () => {
-      rects
+      d3.selectAll(".Raisedquestions,.Fullydenied")
         .transition()
-        .delay((d, i) => 10 * i)
-        .duration(600)
-        //.ease("elastic")
-        .attr("width", 8)
-        .attr("height", 8)
-        .attr("rx", 0)
-        .attr("ry", 0)
-        .attr("x", (d, i) => i < count_denyquestion ? randnum(100, 150) : randnum(200, 250))
-        .attr("y", (d, i) => i * 12)
-        .attr("fill", (d, i) => i < count_denyquestion ? "Brown" : "#99c125")
-        .attr("opacity", (d, i) => i < count_denyquestion ? 1 : 0)//only show 12 people
+        .delay((d, i) => 10 * i + 100)
+        .duration(1200)
+        .attr("x", (d, i) => d.Incumbent == "Yes" ? randnum(100, 150) : randnum(300, 350))
+        .attr("y", (d, i) => i * 2.5)
+        //.attr("fill", (d, i) => d.Incumbent == "Yes" ? "#f7b61e" : "#4a4a49")
+        .attr("opacity", 0.7)
     }
 
 
@@ -308,7 +282,7 @@
     //triger these functions on page scroll
     Object.keys(dataOrder).map((stance) => new scroll(stance.replace(/\s/g, ''), '75%', colorFirstPage[dataOrder[stance]], dataOrder[stance] - 1 >= 0 ? colorFirstPage[dataOrder[stance] - 1] : grid))
     new scroll('div2', '75%', grid2, colorFullyDenied);
-    //new scroll('div6', '75%', barChart, divide);
+    new scroll('div3', '75%', divide, grid2);
 
 
     ready();
