@@ -96,7 +96,7 @@
     //svg
     let svg = d3.select("svg");
 
-    var width = 500, height = 700;
+    var width = 600, height = 700;
 
 
     //svg width and height
@@ -328,8 +328,8 @@
 
       // Add Y axis
       const y = d3.scaleLinear()
-        .domain([0, 17])
-        .range([0, width-100]);
+        .domain([0, 35])
+        .range([0, width-200]);
       svg.append("g")
         .attr("transform", `translate(100, 510)`)
         .call(d3.axisBottom(y).tickSizeOuter(10));
@@ -344,6 +344,12 @@
         .keys(subgroups)
         (stackedElectionData)
 
+      svg.append("circle").attr("cx",300).attr("cy",430).attr("r", 6).style("fill", "#99c125")
+      svg.append("circle").attr("cx",300).attr("cy",460).attr("r", 6).style("fill", "#ffb836")
+      svg.append("circle").attr("cx",300).attr("cy",490).attr("r", 6).style("fill", "#c41f30")
+      svg.append("text").attr("x", 320).attr("y", 430).text("Accepted or Accepted with reservation").style("font-size", "15px").attr("alignment-baseline","middle")
+      svg.append("text").attr("x", 320).attr("y", 460).text("Raised question").style("font-size", "15px").attr("alignment-baseline","middle")
+      svg.append("text").attr("x", 320).attr("y", 490).text("Fully denied").style("font-size", "15px").attr("alignment-baseline","middle")
       // Show the bars
       svg.append("g")
         .selectAll("g")
