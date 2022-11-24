@@ -96,10 +96,12 @@
     //svg
     let svg = d3.select("svg");
 
+    var width = 500, height = 500;
+
 
     //svg width and height
-    svg.attr('width', 500)
-      .attr('height', 1000)
+    svg.attr('width', width)
+      .attr('height', height)
 
 
     //set up grid spacing
@@ -125,7 +127,8 @@
     Object.keys(dataOrder).map((stance) => container.innerHTML += `<div id="${stance.replace(/\s/g, '')}"></div>`);
     //other divs
     container.innerHTML += `<div id="div2"></div>
-                            <div id="div3"></div>`;
+                            <div id="div3"></div>
+                            <div id="div4"></div>`;
 
 
     async function ready() {
@@ -140,6 +143,8 @@
       //divided by incumbent
       document.getElementById("div3").innerHTML += `<h2><strong>${data.filter(c => (c.Stance === "Raised questions" || c.Stance === "Fully denied") && c.Incumbent === 'Yes').length}</strong> candidates are incumbent (left), 
         <strong>${data.filter(c => (c.Stance === "Raised questions" || c.Stance === "Fully denied") && c.Incumbent === 'No').length}</strong> candidates are not (right). </h2>`;
+
+      document.getElementById("div4").innerHTML += `<h2>bar chart</h2>`;
 
       //console.log(data);
       count_total = -1;
@@ -263,6 +268,106 @@
         .attr("opacity", 0.7)
     }
 
+    //bar chart
+    let barChart = () => {
+      let stackedElectionDict = {};
+      let stackedElectionData = [];
+
+      const convertStance = (stance) => stance === "Fully accepted" || stance === "Accepted with reservations" ? "Accepted" : stance.replace(/\s/g, '');
+
+      data.map(d => {
+        if (d.Stance !== "Avoided answering" && d.Stance !== "No comment") {
+          d.State in stackedElectionDict
+            ? convertStance(d.Stance) in stackedElectionDict[d.State]
+              ? stackedElectionDict[d.State][convertStance(d.Stance)] += 1
+              : stackedElectionDict[d.State][convertStance(d.Stance)] = 1
+            : (stackedElectionDict[d.State] = {}, stackedElectionDict[d.State][convertStance(d.Stance)] = 1)
+        }
+      })
+
+      const convertStanceNum = (num) => num === undefined ? 0 : num
+
+      Object.keys(stackedElectionDict).map(state => {
+        stackedElectionData.push({
+          "state": state,
+          "Accepted": convertStanceNum(stackedElectionDict[state]["Accepted"]),
+          "Raisedquestions": convertStanceNum(stackedElectionDict[state]["Raisedquestions"]),
+          "Fullydenied": convertStanceNum(stackedElectionDict[state]["Fullydenied"]),
+        })
+      })
+
+      console.log(stackedElectionData)
+
+      const subgroups = ["Accepted", "Raisedquestions", "Fullydenied"];
+      const groups = stackedElectionData.map(d => d.state)
+
+      // Add X axis
+      const x = d3.scaleBand()
+        .domain(groups)
+        .range([0, height])
+        .padding([0.2])
+      svg.append("g")
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisLeft(x));
+
+
+      // Add Y axis
+      const y = d3.scaleLinear()
+        .domain([0, 17])
+        .range([0, width]);
+      svg.append("g")
+        .call(d3.axisBottom(y).tickSizeOuter(0));
+
+      // color palette = one color per subgroup
+      const color = d3.scaleOrdinal()
+        .domain(subgroups)
+        .range(["#99c125", "#ffb836", "#c41f30"]);
+
+      //stack the data? --> stack per subgroup
+      const stackedData = d3.stack()
+        .keys(subgroups)
+        (stackedElectionData)
+
+      // Show the bars
+      svg.append("g")
+        .selectAll("g")
+        // Enter in the stack data = loop key per key = group per group
+        .data(stackedData)
+        .join("g")
+        .attr("fill", d => color(d.key))
+        .attr("class", d => "myRect " + d.key) // Add a class to each subgroup: their name
+        .selectAll("rect")
+        // enter a second time = loop subgroup per subgroup to add all rectangles
+        .data(d => d)
+        .join("rect")
+        .attr("fill", d => console.log(d.data.group))
+        .attr("y", d => x(d.data.state))
+        .attr("x", d => y(d[0]))
+        .attr("height", x.bandwidth())
+        .attr("width", d => y(d[1]) - y(d[0]))
+        .attr("stroke", "grey")
+        .on("mouseover", function (event, d) { // What happens when user hover a bar
+
+          // what subgroup are we hovering?
+          const subGroupName = d3.select(this.parentNode).datum().key
+          console.log(subGroupName)
+
+          // Reduce opacity of all rect to 0.2
+          d3.selectAll(".myRect").style("opacity", 0.2)
+
+          // Highlight all rects of this subgroup with opacity 1. It is possible to select them since they have a specific class = their name.
+          d3.selectAll("." + subGroupName).style("opacity", 1)
+        })
+        .on("mouseleave", function (event, d) { // When user do not hover anymore
+
+          // Back to normal opacity: 1
+          d3.selectAll(".myRect")
+            .style("opacity", 1)
+        })
+
+
+    }
+
 
 
     //waypoints scroll constructor
@@ -283,6 +388,7 @@
     Object.keys(dataOrder).map((stance) => new scroll(stance.replace(/\s/g, ''), '75%', colorFirstPage[dataOrder[stance]], dataOrder[stance] - 1 >= 0 ? colorFirstPage[dataOrder[stance] - 1] : grid))
     new scroll('div2', '75%', grid2, colorFullyDenied);
     new scroll('div3', '75%', divide, grid2);
+    new scroll('div4', '75%', barChart, divide);
 
 
     ready();
