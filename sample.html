@@ -279,6 +279,12 @@
 
     //bar chart
     let barChart = () => {
+      d3.selectAll(".Raisedquestions,.Fullydenied")
+        .transition()
+        .delay((d, i) => 1 * i)
+        .duration(1200)
+        .attr("opacity", 0)
+
       let stackedElectionDict = {};
       let stackedElectionData = [];
 
@@ -305,7 +311,7 @@
         })
       })
 
-      console.log(stackedElectionData)
+      //console.log(stackedElectionData)
 
       const subgroups = ["Accepted", "Raisedquestions", "Fullydenied"];
       const groups = stackedElectionData.map(d => d.state)
@@ -349,7 +355,7 @@
         // enter a second time = loop subgroup per subgroup to add all rectangles
         .data(d => d)
         .join("rect")
-        .attr("fill", d => console.log(d.data.group))
+        // .attr("fill", d => console.log(d.data.group))
         .attr("y", d => x(d.data.state))
         .attr("x", d => y(d[0]))
         .attr("height", x.bandwidth())
@@ -359,7 +365,7 @@
 
           // what subgroup are we hovering?
           const subGroupName = d3.select(this.parentNode).datum().key
-          console.log(subGroupName)
+          //console.log(subGroupName)
 
           // Reduce opacity of all rect to 0.2
           d3.selectAll(".myRect").style("opacity", 0.2)
