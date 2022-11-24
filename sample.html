@@ -133,10 +133,11 @@
       data = await d3.csv("fivethirtyeight_election_deniers.csv").then();
       data.sort((a, b) => dataOrder[a.Stance] - dataOrder[b.Stance])
 
+      
       //all candiates
-      Object.keys(dataOrder).map((stance) => document.getElementById(stance.replace(/\s/g, '')).innerHTML += `<h2><strong>${data.filter(d => d.Stance === stance).length}</strong> of them stated ${stance.toLowerCase()}. </h2>`)
+      Object.keys(dataOrder).map((stance) => document.getElementById(stance.replace(/\s/g, '')).innerHTML += `<h2><strong><b style="color:${color[dataOrder[stance]]};">${data.filter(d => d.Stance === stance).length}</strong></b> of them stated <b style="color:${color[dataOrder[stance]]};">${stance.toLowerCase()}</b>. </h2>`)
       //raised questoin and fully denied
-      document.getElementById("div2").innerHTML += `<h2>Among <strong>${data.filter(c => c.Stance === "Raised questions" || c.Stance === "Fully denied").length}</strong> candidates who fully denied or raise question, </h2>`;
+      document.getElementById("div2").innerHTML += `<h2>Among <strong>${data.filter(c => c.Stance === "Raised questions" || c.Stance === "Fully denied").length}</strong> candidates who<b style="color:#E26C33"> fully denied or raise question</b>, </h2>`;
       //divided by incumbent
       document.getElementById("div3").innerHTML += `<h2><strong>${data.filter(c => (c.Stance === "Raised questions" || c.Stance === "Fully denied") && c.Incumbent === 'Yes').length}</strong> candidates are incumbent (left), 
         <strong>${data.filter(c => (c.Stance === "Raised questions" || c.Stance === "Fully denied") && c.Incumbent === 'No').length}</strong> candidates are not (right). </h2>`;
@@ -240,6 +241,14 @@
       colorNoComment,
       colorRaisedQuestions,
       colorFullyDenied
+    ]
+    let color =[
+      "#29b524",
+      "#99c125",
+      "#6dc7e8",
+      "#a7b7db",
+      "#ffb836",
+      "#c41f30"
     ]
 
     //circle grid
