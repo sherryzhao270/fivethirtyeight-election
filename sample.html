@@ -321,9 +321,9 @@
         .domain(groups)
         .range([0, height - 200])
         .padding([0.2])
-      // svg.append("g")
-      //   .attr("transform", `translate(0, ${height})`)
-      //   .call(d3.axisLeft(x));
+      svg.append("g")
+         .attr("transform", `translate(100,10)`)
+         .call(d3.axisLeft(x));
 
 
       // Add Y axis
