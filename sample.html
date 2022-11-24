@@ -96,7 +96,7 @@
     //svg
     let svg = d3.select("svg");
 
-    var width = 500, height = 500;
+    var width = 500, height = 700;
 
 
     //svg width and height
@@ -305,21 +305,21 @@
       Object.keys(stackedElectionDict).map(state => {
         stackedElectionData.push({
           "state": state,
-          "Accepted": convertStanceNum(stackedElectionDict[state]["Accepted"]),
-          "Raisedquestions": convertStanceNum(stackedElectionDict[state]["Raisedquestions"]),
-          "Fullydenied": convertStanceNum(stackedElectionDict[state]["Fullydenied"]),
+          "AcceptedBar": convertStanceNum(stackedElectionDict[state]["Accepted"]),
+          "RaisedquestionsBar": convertStanceNum(stackedElectionDict[state]["Raisedquestions"]),
+          "FullydeniedBar": convertStanceNum(stackedElectionDict[state]["Fullydenied"]),
         })
       })
 
       //console.log(stackedElectionData)
 
-      const subgroups = ["Accepted", "Raisedquestions", "Fullydenied"];
+      const subgroups = ["AcceptedBar", "RaisedquestionsBar", "FullydeniedBar"];
       const groups = stackedElectionData.map(d => d.state)
 
       // Add X axis
       const x = d3.scaleBand()
         .domain(groups)
-        .range([0, height])
+        .range([0, height - 200])
         .padding([0.2])
       svg.append("g")
         .attr("transform", `translate(0, ${height})`)
