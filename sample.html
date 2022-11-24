@@ -321,17 +321,18 @@
         .domain(groups)
         .range([0, height - 200])
         .padding([0.2])
-      svg.append("g")
-        .attr("transform", `translate(0, ${height})`)
-        .call(d3.axisLeft(x));
+      // svg.append("g")
+      //   .attr("transform", `translate(0, ${height})`)
+      //   .call(d3.axisLeft(x));
 
 
       // Add Y axis
       const y = d3.scaleLinear()
         .domain([0, 17])
-        .range([0, width]);
+        .range([0, width-100]);
       svg.append("g")
-        .call(d3.axisBottom(y).tickSizeOuter(0));
+        .attr("transform", `translate(100, 510)`)
+        .call(d3.axisBottom(y).tickSizeOuter(10));
 
       // color palette = one color per subgroup
       const color = d3.scaleOrdinal()
@@ -356,8 +357,8 @@
         .data(d => d)
         .join("rect")
         // .attr("fill", d => console.log(d.data.group))
-        .attr("y", d => x(d.data.state))
-        .attr("x", d => y(d[0]))
+        .attr("y", d => x(d.data.state)+10)
+        .attr("x", d => y(d[0])+100)
         .attr("height", x.bandwidth())
         .attr("width", d => y(d[1]) - y(d[0]))
         .attr("stroke", "grey")
@@ -372,6 +373,7 @@
 
           // Highlight all rects of this subgroup with opacity 1. It is possible to select them since they have a specific class = their name.
           d3.selectAll("." + subGroupName).style("opacity", 1)
+
         })
         .on("mouseleave", function (event, d) { // When user do not hover anymore
 
