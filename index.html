@@ -93,13 +93,13 @@
 
 
   <script>
-  //Our code refer to the following sources & tutorials:
-  //https://d3-graph-gallery.com/graph/custom_legend.html
-  //https://d3-graph-gallery.com/graph/barplot_stacked_highlight.html
-  //https://bl.ocks.org/baronwatts/2a50ae537d7c46670aa5eb30254ef751
-  //Choose-your-own Lab—-Storytelling (Tianxi Zhao Lingtao Kong)
-  //
-  //
+    //Our code refer to the following sources & tutorials:
+    //https://d3-graph-gallery.com/graph/custom_legend.html
+    //https://d3-graph-gallery.com/graph/barplot_stacked_highlight.html
+    //https://bl.ocks.org/baronwatts/2a50ae537d7c46670aa5eb30254ef751
+    //Choose-your-own Lab—-Storytelling (Tianxi Zhao Lingtao Kong)
+    //
+    //
     let svg = d3.select("svg");
 
     var width = 600, height = 700;
@@ -142,7 +142,7 @@
       data = await d3.csv("fivethirtyeight_election_deniers.csv").then();
       data.sort((a, b) => dataOrder[a.Stance] - dataOrder[b.Stance])
 
-      
+
       //all candiates
       Object.keys(dataOrder).map((stance) => document.getElementById(stance.replace(/\s/g, '')).innerHTML += `<h2><strong><b style="color:${color[dataOrder[stance]]};">${data.filter(d => d.Stance === stance).length}</strong></b> of them stated <b style="color:${color[dataOrder[stance]]};">${stance.toLowerCase()}</b>. </h2>`)
       //raised questoin and fully denied
@@ -175,8 +175,8 @@
           count_denyquestion++;
         }
       }
-      
-      
+
+
       document.getElementById("div1").innerHTML = "<h2>According to the data from FiveThirtyEight, among <strong>" + count_total + "</strong> Republican Candiates";
 
       firstPage()
@@ -237,7 +237,7 @@
       colorRaisedQuestions,
       colorFullyDenied
     ]
-    let color =[
+    let color = [
       "#29b524",
       "#99c125",
       "#6dc7e8",
@@ -271,7 +271,7 @@
     let barChart = () => {
       d3.selectAll(".Raisedquestions,.Fullydenied")
         .transition()
-        .delay((d, i) => 1 * i)
+        .delay((d, i) => 0.5 * i)
         .duration(1200)
         .attr("opacity", 0)
 
@@ -311,18 +311,19 @@
         .domain(groups)
         .range([0, height - 200])
         .padding([0.2])
-      svg.append("g")
-         .attr("transform", `translate(100,10)`)
-         .call(d3.axisLeft(x));
-
+      let axisX = svg.append("g")
+        .attr("transform", `translate(100,10)`)
+        .call(d3.axisLeft(x))
+        .attr("opacity", 0);
 
       // Add Y axis
       const y = d3.scaleLinear()
         .domain([0, 35])
-        .range([0, width-200]);
-      svg.append("g")
+        .range([0, width - 200]);
+      let axisY = svg.append("g")
         .attr("transform", `translate(100, 510)`)
-        .call(d3.axisBottom(y).tickSizeOuter(10));
+        .call(d3.axisBottom(y).tickSizeOuter(10))
+        .attr("opacity", 0);
 
       // color palette = one color per subgroup
       const color = d3.scaleOrdinal()
@@ -334,14 +335,14 @@
         .keys(subgroups)
         (stackedElectionData)
 
-      svg.append("circle").attr("cx",300).attr("cy",430).attr("r", 6).style("fill", "#99c125")
-      svg.append("circle").attr("cx",300).attr("cy",460).attr("r", 6).style("fill", "#ffb836")
-      svg.append("circle").attr("cx",300).attr("cy",490).attr("r", 6).style("fill", "#c41f30")
-      svg.append("text").attr("x", 320).attr("y", 430).text("Accepted or Accepted with reservation").style("font-size", "15px").attr("alignment-baseline","middle")
-      svg.append("text").attr("x", 320).attr("y", 460).text("Raised question").style("font-size", "15px").attr("alignment-baseline","middle")
-      svg.append("text").attr("x", 320).attr("y", 490).text("Fully denied").style("font-size", "15px").attr("alignment-baseline","middle")
+      svg.append("circle").transition().delay(d => 700).attr("cx", 300).attr("cy", 430).attr("r", 6).style("fill", "#99c125")
+      svg.append("circle").transition().delay(d => 700).attr("cx", 300).attr("cy", 460).attr("r", 6).style("fill", "#ffb836")
+      svg.append("circle").transition().delay(d => 700).attr("cx", 300).attr("cy", 490).attr("r", 6).style("fill", "#c41f30")
+      svg.append("text").transition().delay(d => 700).attr("x", 320).attr("y", 430).text("Accepted or Accepted with reservation").style("font-size", "15px").attr("alignment-baseline", "middle")
+      svg.append("text").transition().delay(d => 700).attr("x", 320).attr("y", 460).text("Raised question").style("font-size", "15px").attr("alignment-baseline", "middle")
+      svg.append("text").transition().delay(d => 700).attr("x", 320).attr("y", 490).text("Fully denied").style("font-size", "15px").attr("alignment-baseline", "middle")
       // Show the bars
-      svg.append("g")
+      let bars = svg.append("g")
         .selectAll("g")
         // Enter in the stack data = loop key per key = group per group
         .data(stackedData)
@@ -353,11 +354,12 @@
         .data(d => d)
         .join("rect")
         // .attr("fill", d => console.log(d.data.group))
-        .attr("y", d => x(d.data.state)+10)
-        .attr("x", d => y(d[0])+100)
+        .attr("y", d => x(d.data.state) + 10)
+        .attr("x", d => y(d[0]) + 100)
         .attr("height", x.bandwidth())
         .attr("width", d => y(d[1]) - y(d[0]))
         .attr("stroke", "grey")
+        .attr("opacity", 0)
         .on("mouseover", function (event, d) { // What happens when user hover a bar
 
           // what subgroup are we hovering?
@@ -378,6 +380,20 @@
             .style("opacity", 1)
         })
 
+      axisX
+        .transition()
+        .delay(d => 500)
+        .attr("opacity", 1)
+
+      axisY
+        .transition()
+        .delay(d => 500)
+        .attr("opacity", 1)
+
+      bars
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 1)
 
     }
 
