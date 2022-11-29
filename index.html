@@ -118,6 +118,8 @@
 
     let group, rects;
     var data;
+    let axisX, axisY, bars;
+    let circle1, circle2, circle3, text1, text2, text3;
 
     let dataOrder = {
       "Fully accepted": 0,
@@ -180,10 +182,12 @@
       document.getElementById("div1").innerHTML = "<h2>According to the data from FiveThirtyEight, among <strong>" + count_total + "</strong> Republican Candiates";
 
       firstPage()
+      barChart()
 
     }
 
     let firstPage = () => {
+      d3.select("g").remove();
       //create group and join our data to that group
       group = svg.selectAll('g')
         .data(data)
@@ -265,15 +269,12 @@
         .attr("y", (d, i) => i * 2.5)
         //.attr("fill", (d, i) => d.Incumbent == "Yes" ? "#f7b61e" : "#4a4a49")
         .attr("opacity", 0.7)
+
+      hideBarChart()
     }
 
     //bar chart
     let barChart = () => {
-      d3.selectAll(".Raisedquestions,.Fullydenied")
-        .transition()
-        .delay((d, i) => 0.5 * i)
-        .duration(1200)
-        .attr("opacity", 0)
 
       let stackedElectionDict = {};
       let stackedElectionData = [];
@@ -311,7 +312,7 @@
         .domain(groups)
         .range([0, height - 200])
         .padding([0.2])
-      let axisX = svg.append("g")
+      axisX = svg.append("g")
         .attr("transform", `translate(100,10)`)
         .call(d3.axisLeft(x))
         .attr("opacity", 0);
@@ -320,7 +321,7 @@
       const y = d3.scaleLinear()
         .domain([0, 35])
         .range([0, width - 200]);
-      let axisY = svg.append("g")
+      axisY = svg.append("g")
         .attr("transform", `translate(100, 510)`)
         .call(d3.axisBottom(y).tickSizeOuter(10))
         .attr("opacity", 0);
@@ -335,14 +336,14 @@
         .keys(subgroups)
         (stackedElectionData)
 
-      svg.append("circle").transition().delay(d => 700).attr("cx", 300).attr("cy", 430).attr("r", 6).style("fill", "#99c125")
-      svg.append("circle").transition().delay(d => 700).attr("cx", 300).attr("cy", 460).attr("r", 6).style("fill", "#ffb836")
-      svg.append("circle").transition().delay(d => 700).attr("cx", 300).attr("cy", 490).attr("r", 6).style("fill", "#c41f30")
-      svg.append("text").transition().delay(d => 700).attr("x", 320).attr("y", 430).text("Accepted or Accepted with reservation").style("font-size", "15px").attr("alignment-baseline", "middle")
-      svg.append("text").transition().delay(d => 700).attr("x", 320).attr("y", 460).text("Raised question").style("font-size", "15px").attr("alignment-baseline", "middle")
-      svg.append("text").transition().delay(d => 700).attr("x", 320).attr("y", 490).text("Fully denied").style("font-size", "15px").attr("alignment-baseline", "middle")
+      circle1 = svg.append("circle").attr("cx", 300).attr("cy", 430).attr("r", 6).style("fill", "#99c125").attr("opacity", 0)
+      circle2 = svg.append("circle").attr("cx", 300).attr("cy", 460).attr("r", 6).style("fill", "#ffb836").attr("opacity", 0)
+      circle3 = svg.append("circle").attr("cx", 300).attr("cy", 490).attr("r", 6).style("fill", "#c41f30").attr("opacity", 0)
+      text1 = svg.append("text").attr("x", 320).attr("y", 430).text("Accepted or Accepted with reservation").style("font-size", "15px").attr("alignment-baseline", "middle").attr("opacity", 0)
+      text2 = svg.append("text").attr("x", 320).attr("y", 460).text("Raised question").style("font-size", "15px").attr("alignment-baseline", "middle").attr("opacity", 0)
+      text3 = svg.append("text").attr("x", 320).attr("y", 490).text("Fully denied").style("font-size", "15px").attr("alignment-baseline", "middle").attr("opacity", 0)
       // Show the bars
-      let bars = svg.append("g")
+      bars = svg.append("g")
         .selectAll("g")
         // Enter in the stack data = loop key per key = group per group
         .data(stackedData)
@@ -380,6 +381,15 @@
             .style("opacity", 1)
         })
 
+    }
+
+    const showBarChart = () => {
+      d3.selectAll(".Raisedquestions,.Fullydenied")
+        .transition()
+        .delay((d, i) => 0.5 * i)
+        .duration(1200)
+        .attr("opacity", 0)
+
       axisX
         .transition()
         .delay(d => 500)
@@ -395,6 +405,82 @@
         .delay(d => 600)
         .attr("opacity", 1)
 
+      circle1
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 1)
+
+      circle2
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 1)
+
+      circle3
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 1)
+
+      text1
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 1)
+
+      text2
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 1)
+
+      text3
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 1)
+    }
+
+    let hideBarChart = () => {
+      axisX
+        .transition()
+        .delay(d => 500)
+        .attr("opacity", 0)
+
+      axisY
+        .transition()
+        .delay(d => 500)
+        .attr("opacity", 0)
+
+      bars
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 0)
+
+      circle1
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 0)
+
+      circle2
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 0)
+
+      circle3
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 0)
+
+      text1
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 0)
+
+      text2
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 0)
+
+      text3
+        .transition()
+        .delay(d => 600)
+        .attr("opacity", 0)
     }
 
 
@@ -417,7 +503,7 @@
     Object.keys(dataOrder).map((stance) => new scroll(stance.replace(/\s/g, ''), '75%', colorFirstPage[dataOrder[stance]], dataOrder[stance] - 1 >= 0 ? colorFirstPage[dataOrder[stance] - 1] : grid))
     new scroll('div2', '75%', grid2, colorFullyDenied);
     new scroll('div3', '75%', divide, grid2);
-    new scroll('div4', '75%', barChart, divide);
+    new scroll('div4', '75%', showBarChart, divide);
 
 
     ready();
