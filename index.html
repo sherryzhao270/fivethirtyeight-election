@@ -302,7 +302,8 @@
         })
       })
 
-      //console.log(stackedElectionData)
+      const acceptedProportion = (d) => d.AcceptedBar / (d.AcceptedBar + d.RaisedquestionsBar + d.FullydeniedBar)
+      stackedElectionData.sort((a, b) => acceptedProportion(b) - acceptedProportion(a))
 
       const subgroups = ["AcceptedBar", "RaisedquestionsBar", "FullydeniedBar"];
       const groups = stackedElectionData.map(d => d.state)
