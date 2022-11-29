@@ -43,7 +43,7 @@
 
     #graphic {
       max-width: 1440px;
-      width: 100%;
+      width: 70%;
       position: relative;
       height: 100%;
       position: relative;
@@ -175,28 +175,12 @@
           count_denyquestion++;
         }
       }
-      // for(i in data)
-      // {
-      //   if(data[i].bar==0 || data[i].chocolate==0)
-      //   {
-      //       chcolatebardata.push(data[i]);
-      //   }
-      // }
-      console.log(count_total);
-      console.log(count_denyquestion);
-      console.log(count_deny);
-      console.log(denierdata);
+      
+      
       document.getElementById("div1").innerHTML = "<h2>According to the data from FiveThirtyEight, among <strong>" + count_total + "</strong> Republican Candiates";
 
       firstPage()
 
-      //
-      //
-      //前面的部分是数据导入
-      //代码我检查过了基本没有问题
-      //后半部分(图像显示的部分)还没做
-      //
-      //svg
     }
 
     let firstPage = () => {
